@@ -88,5 +88,4 @@ function plugin_init_dbpopulator(): void {
 
     // Declaration des HOOKS
     $PLUGIN_HOOKS['csrf_compliant']['dbpopulator'] = true;
-
 }
