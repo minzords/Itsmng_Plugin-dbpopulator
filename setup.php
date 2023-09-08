@@ -86,10 +86,15 @@ function plugin_dbpopulator_check_config(): bool {
 function plugin_init_dbpopulator(): void {
     global $PLUGIN_HOOKS;
 
-    // Declaration des HOOKS
-    $PLUGIN_HOOKS['csrf_compliant']['dbpopulator'] = true;
-    $PLUGIN_HOOKS['menu_toadd']['dbpopulator'] = ['tools' => array(PluginDbpopulatorConfig::class)];
+
 
     // Register class
     Plugin::registerClass(PluginDbpopulatorDbpopulator::class);
+    Plugin::registerClass('PluginDbpopulatorProfile', array('addtabon' => array('Profile')));
+
+    $PLUGIN_HOOKS['csrf_compliant']['dbpopulator'] = true;
+    // Declaration des HOOKS
+    if (Session::haveRight("profile", UPDATE)) {    
+        $PLUGIN_HOOKS['menu_toadd']['dbpopulator'] = ['tools' => array(PluginDbpopulatorConfig::class)];
+    }
 }
