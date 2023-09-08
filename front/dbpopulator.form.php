@@ -38,11 +38,12 @@ use ParagonIE\Sodium\Core\Curve25519\H;
  Html::header(__("Populate database", "dbpopulator"), $_SERVER['PHP_SELF'], 'tools', PluginDbpopulatorConfig::class);
 
  if (isset($_POST['computers']) || isset($_POST['users'])) {
-    echo "<h1>Posted</h1>";
- } else {
-    echo "<h1>Not posted</h1>";
+    $computers = $_POST['computers'];
+    $users = $_POST['users'];
+    //$db = new DbPopulator();
+    //$db->populate(['computers' => $computers, 'users' => $users]);
+    echo '<div class="center">Database populated</div>';
  }
-
 ?>
 <div class="center">
     <form method="post" action="dbpopulator.form.php">
