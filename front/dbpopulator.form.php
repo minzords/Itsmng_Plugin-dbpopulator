@@ -30,8 +30,35 @@
  * ---------------------------------------------------------------------
  */
 
+use ParagonIE\Sodium\Core\Curve25519\H;
+
  include_once ('../../../inc/includes.php');
 
+ 
  Html::header(__("Populate database", "dbpopulator"), $_SERVER['PHP_SELF'], 'tools', PluginDbpopulatorConfig::class);
+
+ if (isset($_POST['computers']) || isset($_POST['users'])) {
+    echo "<h1>Posted</h1>";
+ } else {
+    echo "<h1>Not posted</h1>";
+ }
+
 ?>
-<h1>test</h1>
+<div class="center">
+    <form method="post" action="dbpopulator.form.php">
+        <div>
+            <label for="computers">Amount of computers to create</label><br>
+            <input type="number" name="computers" value="1">
+        </div>
+        <br>
+        <div>
+            <label for="users">Amount of users to create</label><br>
+            <input type="number" name="users" value="1">
+        </div>
+        <br>
+        <button type="submit">Populate</button>
+<?php 
+    Html::footer();
+    Html::closeForm();
+    echo "</div>"
+?>

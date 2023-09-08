@@ -30,10 +30,20 @@
  * ---------------------------------------------------------------------
  */
 
-class PluginDbPopulatorConfig extends CommonDBTM {
+class PluginEdittraductionConfig extends CommonDBTM {
 
     static $rightname = 'config';
-
+    
+    /**
+     * getTypeName
+     *
+     * @param  int $nb
+     * @return string
+     */
+    static function getTypeName($nb = 0) {
+        return __("Translation editor", 'edittraduction');
+    }
+    
     /**
      * get menu content
      *
