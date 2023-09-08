@@ -1,4 +1,5 @@
 <?php
+
 /**
  * ---------------------------------------------------------------------
  * ITSM-NG
@@ -30,18 +31,26 @@
  * ---------------------------------------------------------------------
  */
 
-include_once ('../../../inc/includes.php');
- 
- Html::header(__("Populate database", "dbpopulator"), $_SERVER['PHP_SELF'], 'tools', PluginDbpopulatorConfig::class);
+include_once('../../../inc/includes.php');
 
- if (isset($_POST['computers']) || isset($_POST['users'])) {
+Html::header(__("Populate database", "dbpopulator"), $_SERVER['PHP_SELF'], 'tools', PluginDbpopulatorConfig::class);
+
+$plugin = new Plugin();
+if ($plugin->isActivated("dbpopulator")) {
+    Session::checkRight("config", READ);
+} else {
+    Html::displayRightError();
+}
+
+if (isset($_POST['computers']) || isset($_POST['users'])) {
+    Session::checkRight("config", UPDATE);
     $computers = $_POST['computers'];
     $users = $_POST['users'];
     $prefix = $_POST['prefix'];
     $db = new PluginDbpopulatorDbpopulator();
     $db->populate(['computers' => $computers, 'users' => $users, 'prefix' => $prefix]);
     echo '<div class="center">Database populated</div>';
- }
+}
 ?>
 <div class="center">
     <form method="post" action="dbpopulator.form.php">
@@ -60,8 +69,8 @@ include_once ('../../../inc/includes.php');
             <input type="text" name="prefix" value="">
         </div>
         <button type="submit">Populate</button>
-<?php 
-    Html::footer();
-    Html::closeForm();
-    echo "</div>"
-?>
+        <?php
+        Html::footer();
+        Html::closeForm();
+        echo "</div>"
+        ?>

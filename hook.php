@@ -29,6 +29,24 @@
  **/
  
 function plugin_dbpopulator_install(): bool {
+    global $DB;
+    if (!$DB->tableExists("glpi_plugin_dbpopulator_profiles")) {
+        $query = "CREATE TABLE `glpi_plugin_dbpopulator_profiles` (
+            `id` int(11) NOT NULL default '0' COMMENT 'RELATION to glpi_profiles (id)',
+            `right` char(1) collate utf8_unicode_ci default NULL,
+            PRIMARY KEY (`id`)
+        ) ENGINE=InnoDB  DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci";
+
+        $DB->queryOrDie($query, $DB->error());
+
+        include_once(GLPI_ROOT."/plugins/dbpopulator/inc/profile.class.php");
+        PluginDbpopulatorProfile::createAdminAccess($_SESSION['glpiactiveprofile']['id']);
+
+        foreach (PluginDbpopulatorProfile::getRightsGeneral() as $right) {
+            PluginDbpopulatorProfile::addDefaultProfileInfos($_SESSION['glpiactiveprofile']['id'],[$right['field'] => $right['default']]);
+        }
+    }
+
     return true ;
 }
 
