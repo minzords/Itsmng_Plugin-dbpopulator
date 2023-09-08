@@ -33,16 +33,18 @@ class PluginDbpopulatorDbpopulator extends CommonDBTM {
     * @global object $DB
     * @return boolean
     */
-    private function populate_computer(int $number) : bool {
+    private function populate_computer(int $number) {
         global $DB;
         $faker = Faker\Factory::create();
-    
+        $words = array();
+        $prefixe = 'nodejs_';
+
         foreach (range(1, $number) as $i) {
-            $query = "INSERT INTO `glpi_computers` (`name`) VALUES ('%s');";
-            $query = sprintf($query, $faker->word());
-            $DB->query($query) or die($DB->error());
+            $words[] =  $prefixe . $faker->randomNumber($nbDigits = NULL);
         }
-    
+        die ($query = "INSERT INTO `glpi_computers` (`name`) VALUES ('" . implode("'),('", $words) . "')");
+        $DB->query($query) or die($DB->error());
+
         return true;
     }
 
