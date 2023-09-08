@@ -30,9 +30,7 @@
  * ---------------------------------------------------------------------
  */
 
-use ParagonIE\Sodium\Core\Curve25519\H;
-
- include_once ('../../../inc/includes.php');
+include_once ('../../../inc/includes.php');
 
  
  Html::header(__("Populate database", "dbpopulator"), $_SERVER['PHP_SELF'], 'tools', PluginDbpopulatorConfig::class);
