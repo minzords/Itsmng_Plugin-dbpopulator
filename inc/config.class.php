@@ -1,11 +1,13 @@
 <?php
-
 /**
  * ---------------------------------------------------------------------
  * ITSM-NG
- * Copyright (C) 2023 ITSM-NG and contributors.
+ * Copyright (C) 2022 ITSM-NG and contributors.
  *
  * https://www.itsm-ng.org
+ *
+ * based on GLPI - Gestionnaire Libre de Parc Informatique
+ * Copyright (C) 2003-2014 by the INDEPNET Development Team.
  *
  * ---------------------------------------------------------------------
  *
@@ -26,17 +28,34 @@
  * You should have received a copy of the GNU General Public License
  * along with ITSM-NG. If not, see <http://www.gnu.org/licenses/>.
  * ---------------------------------------------------------------------
- **/
- 
-function plugin_dbpopulator_install(): bool {
-    return true ;
-}
-
-/**
- * Uninstall plugin
- *
- * @return boolean
  */
-function plugin_dbpopulator_uninstall(): bool {
-    return true;
+
+class PluginDbpopulatorConfig extends CommonDBTM {
+
+    static $rightname = 'config';
+    
+    /**
+     * getTypeName
+     *
+     * @param  int $nb
+     * @return string
+     */
+    static function getTypeName($nb = 0) {
+        return __("Translation editor", 'edittraduction');
+    }
+    
+    /**
+     * get menu content
+     *
+     * @return array
+     */
+    static function getMenuContent()
+    {
+        $menu = array();
+
+        $menu['title'] = "Popupate database";
+        $menu['page'] = "/plugins/dbpopulator/front/dbpopulator.form.php";
+        $menu['icon']  = "fas fa-database";
+        return $menu;
+    }
 }
