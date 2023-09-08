@@ -1,7 +1,5 @@
 <?php
 
-use atoum\atoum\asserters\boolean;
-
 /**
  * ---------------------------------------------------------------------
  * ITSM-NG
@@ -31,9 +29,6 @@ use atoum\atoum\asserters\boolean;
  **/
  
 function plugin_dbpopulator_install(): bool {
-
-    populate_database(200);
-
     return true ;
 }
 
@@ -43,27 +38,5 @@ function plugin_dbpopulator_install(): bool {
  * @return boolean
  */
 function plugin_dbpopulator_uninstall(): bool {
-    return true;
-}
-
-/**
- * Populate database with random data
- *
- * @param integer $number
- * @return boolean
- */
-function populate_database(int $number): bool{
-    global $DB;
-    require_once 'vendor/autoload.php';
-
-    $migration = new Migration(101);
-    $faker = Faker\Factory::create();
-
-    foreach (range(1, $number) as $i) {
-        $query = "INSERT INTO `glpi_computers` (`name`) VALUES ('%s');";
-        $query = sprintf($query, $faker->word());
-        $DB->query($query) or die($DB->error());
-    }
-
     return true;
 }

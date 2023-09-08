@@ -88,11 +88,8 @@ function plugin_init_dbpopulator(): void {
 
     // Declaration des HOOKS
     $PLUGIN_HOOKS['csrf_compliant']['dbpopulator'] = true;
-    if (Session::haveRight("plugin_edittraduction_edittraduction", UPDATE)) {
-        $PLUGIN_HOOKS['menu_toadd']['dbpopulator'] = ['tools' => array(PluginDbpopulatorConfig::class)];
-    }
+    $PLUGIN_HOOKS['menu_toadd']['dbpopulator'] = ['tools' => array(PluginDbpopulatorConfig::class)];
 
-    
-    
-
+    // Register class
+    Plugin::registerClass(PluginDbpopulatorDbpopulator::class);
 }

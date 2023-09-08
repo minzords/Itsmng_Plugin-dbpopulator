@@ -31,15 +31,14 @@
  */
 
 include_once ('../../../inc/includes.php');
-
  
  Html::header(__("Populate database", "dbpopulator"), $_SERVER['PHP_SELF'], 'tools', PluginDbpopulatorConfig::class);
 
  if (isset($_POST['computers']) || isset($_POST['users'])) {
     $computers = $_POST['computers'];
     $users = $_POST['users'];
-    //$db = new DbPopulator();
-    //$db->populate(['computers' => $computers, 'users' => $users]);
+    $db = new PluginDbpopulatorDbpopulator();
+    $db->populate(['computers' => $computers, 'users' => $users]);
     echo '<div class="center">Database populated</div>';
  }
 ?>

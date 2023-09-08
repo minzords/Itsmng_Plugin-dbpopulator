@@ -30,7 +30,7 @@
  * ---------------------------------------------------------------------
  */
 
-class PluginEdittraductionConfig extends CommonDBTM {
+class PluginDbpopulatorConfig extends CommonDBTM {
 
     static $rightname = 'config';
     
