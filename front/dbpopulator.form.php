@@ -37,8 +37,9 @@ include_once ('../../../inc/includes.php');
  if (isset($_POST['computers']) || isset($_POST['users'])) {
     $computers = $_POST['computers'];
     $users = $_POST['users'];
+    $prefix = $_POST['prefix'];
     $db = new PluginDbpopulatorDbpopulator();
-    $db->populate(['computers' => $computers, 'users' => $users]);
+    $db->populate(['computers' => $computers, 'users' => $users, 'prefix' => $prefix]);
     echo '<div class="center">Database populated</div>';
  }
 ?>
@@ -54,6 +55,10 @@ include_once ('../../../inc/includes.php');
             <input type="number" name="users" value="1">
         </div>
         <br>
+        <div>
+            <label for="prefix">Prefix</label><br>
+            <input type="text" name="prefix" value="">
+        </div>
         <button type="submit">Populate</button>
 <?php 
     Html::footer();

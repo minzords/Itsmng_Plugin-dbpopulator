@@ -2,6 +2,9 @@
 
 class PluginDbpopulatorDbpopulator extends CommonDBTM {
 
+    private $prefix;
+
+
     function __construct() {
         require_once '../vendor/autoload.php';
     }
@@ -14,6 +17,9 @@ class PluginDbpopulatorDbpopulator extends CommonDBTM {
      * @return void
      */
     function populate(array $array) : void {
+
+        self::setPrefix($array['prefix']);
+
         foreach ($array as $key => $value) {
             switch ($key) {
                 case 'computers':
@@ -26,6 +32,10 @@ class PluginDbpopulatorDbpopulator extends CommonDBTM {
         }
     }
 
+    private function populate_item() {
+
+    }
+
     /**
     * Populate computer in database with random data
     *
@@ -36,13 +46,13 @@ class PluginDbpopulatorDbpopulator extends CommonDBTM {
     private function populate_computer(int $number) {
         global $DB;
         $faker = Faker\Factory::create();
-        $words = array();
-        $prefixe = 'nodejs_';
+        $name = array();
+        $prefixe = self::getPrefix();
 
         foreach (range(1, $number) as $i) {
-            $words[] =  $prefixe . $faker->randomNumber($nbDigits = NULL);
+            $name[] =  $prefixe . $faker->randomNumber($nbDigits = NULL);
         }
-        die ($query = "INSERT INTO `glpi_computers` (`name`) VALUES ('" . implode("'),('", $words) . "')");
+        $query = "INSERT INTO `glpi_computers` (`name`) VALUES ('" . implode("'),('", $name) . "')";
         $DB->query($query) or die($DB->error());
 
         return true;
@@ -59,14 +69,38 @@ class PluginDbpopulatorDbpopulator extends CommonDBTM {
         global $DB;
         $faker = Faker\Factory::create();
 
-        // foreach (range(1, $number) as $i) {
-        //     $query = "INSERT INTO `glpi_computers` (`name`) VALUES ('%s');";
-        //     $query = sprintf($query, $faker->word());
-        //     $DB->query($query) or die($DB->error());
-        // }
-
-        // die('Not implemented yet');
-
+        foreach (range(1, $number) as $i) {
+            $name[] =  $faker->firstName();
+        }
+        $query = "INSERT INTO `glpi_users` (`name`) VALUES ('" . implode("'),('", $name) . "')";
+        $DB->query($query) or die($DB->error());
+        
         return true;
+    }
+
+    
+
+    /**
+     * Get the value of prefix
+     * @return string
+     */ 
+    private function getPrefix() {
+        return $this->prefix;
+    }
+
+    /**
+     * Set the value of prefix
+     *
+     * @return  self
+     */ 
+    private function setPrefix($prefix) {
+        // If prefix is empty, set it to fake_
+        if (empty($prefix)) {
+            $prefix = 'fake_';
+        }
+
+        $this->prefix = $prefix;
+
+        return $this->prefix;
     }
 }
