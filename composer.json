@@ -1,0 +1,12 @@
+{
+    "name": "minzord/dbpopulator",
+    "require": {
+        "fakerphp/faker": "^1.23"
+    },
+    "license": "GPL3",
+    "authors": [
+        {
+            "name": "Minzord,AntoineLemarchand"
+        }
+    ]
+}
