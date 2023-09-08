@@ -88,5 +88,8 @@ function plugin_init_dbpopulator(): void {
 
     // Declaration des HOOKS
     $PLUGIN_HOOKS['csrf_compliant']['dbpopulator'] = true;
+<<<<<<< HEAD
     $PLUGIN_HOOKS['menu_toadd']['dbpopulator'] = ['tools' => array(PluginDbpopulatorConfig::class)];
+=======
+>>>>>>> origin/main
 }
