@@ -48,13 +48,13 @@ class PluginDbpopulatorDbpopulator extends CommonDBTM
         global $DB;
         $queryValue = "select GROUP_CONCAT(column_name) nonnull_columns 
         from information_schema.columns 
-        where table_schema = 'itsmng1_5' and
+        where table_schema = '".$DB->dbdefault."' and
         table_name = '" . $table . "' and
         is_nullable = 'YES'";
         $values = explode(',', $DB->query($queryValue)->fetch_assoc()['nonnull_columns']);
         $queryValue = "select GROUP_CONCAT(column_type) nonnull_columns 
         from information_schema.columns 
-        where table_schema = 'itsmng1_5' and
+        where table_schema = '".$DB->dbdefault."' and
         table_name = '" . $table . "' and
         is_nullable = 'YES'";
         $types = explode(',', $DB->query($queryValue)->fetch_assoc()['nonnull_columns']);
@@ -99,7 +99,6 @@ class PluginDbpopulatorDbpopulator extends CommonDBTM
             $query .= "),";
         }
         $query = substr($query, 0, -1);
-        echo '<h5>'.$query.'</h5>';
         $DB->query($query);
     }
 
