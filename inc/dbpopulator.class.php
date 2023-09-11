@@ -1,11 +1,16 @@
 <?php
 
-class PluginDbpopulatorDbpopulator extends CommonDBTM {
+class PluginDbpopulatorDbpopulator extends CommonDBTM
+{
 
     private $prefix;
 
 
-    function __construct() {
+    /**
+     * Constructor
+     */
+    function __construct()
+    {
         require_once '../vendor/autoload.php';
     }
 
@@ -16,75 +21,94 @@ class PluginDbpopulatorDbpopulator extends CommonDBTM {
      * @param array $array
      * @return void
      */
-    function populate(array $array) : void {
+    function populate(array $array): void
+    {
 
         self::setPrefix($array['prefix']);
+        unset($array['prefix']);
 
         foreach ($array as $key => $value) {
-            switch ($key) {
-                case 'computers':
-                    $this->populate_computer($value);
-                    break;
-                case 'users':
-                    $this->populate_user($value);
-                    break;
+            $table = getTableForItemType($key);
+            if ($table != null) {
+                self::populateTable($table, self::getPrefix(), intval($value));
             }
         }
     }
 
-    private function populate_item() {
-
-    }
-
     /**
-    * Populate computer in database with random data
-    *
-    * @param integer $number
-    * @global object $DB
-    * @return boolean
-    */
-    private function populate_computer(int $number) {
-        global $DB;
-        $faker = Faker\Factory::create();
-        $name = array();
-        $prefixe = self::getPrefix();
-
-        foreach (range(1, $number) as $i) {
-            $name[] =  $prefixe . $faker->randomNumber($nbDigits = NULL);
-        }
-        $query = "INSERT INTO `glpi_computers` (`name`) VALUES ('" . implode("'),('", $name) . "')";
-        $DB->query($query) or die($DB->error());
-
-        return true;
-    }
-
-    /**
-     * Populate user in database with random data
-     *
-     * @param integer $number
+     * get the columns of a table
+     * 
+     * @param string $table
      * @global object $DB
-     * @return boolean
+     * 
+     * @return array
      */
-    private function populate_user(int $number) : bool {
+    private function getColumnsFromTable(string $table)
+    {
         global $DB;
-        $faker = Faker\Factory::create();
+        $queryValue = "select GROUP_CONCAT(column_name) nonnull_columns 
+        from information_schema.columns 
+        where table_schema = 'itsmng1_5' and
+        table_name = '" . $table . "' and
+        is_nullable = 'YES'";
+        $values = explode(',', $DB->query($queryValue)->fetch_assoc()['nonnull_columns']);
+        $queryValue = "select GROUP_CONCAT(column_type) nonnull_columns 
+        from information_schema.columns 
+        where table_schema = 'itsmng1_5' and
+        table_name = '" . $table . "' and
+        is_nullable = 'YES'";
+        $types = explode(',', $DB->query($queryValue)->fetch_assoc()['nonnull_columns']);
 
-        foreach (range(1, $number) as $i) {
-            $name[] =  $faker->firstName();
+        $ret = [];
+        foreach ($values as $index => $col) {
+            $ret[$col] = $types[$index];
         }
-        $query = "INSERT INTO `glpi_users` (`name`) VALUES ('" . implode("'),('", $name) . "')";
-        $DB->query($query) or die($DB->error());
-        
-        return true;
+
+        return $ret;
     }
 
-    
+
+    /**
+     * Populate a table with fake data using faker
+     * 
+     * @param string $table
+     * @param string $prefix
+     * @param int $quantity
+     * @global object $DB
+     */
+    private function populateTable(string $table, string $prefix, int $quantity) {
+        global $DB;
+        $faker = Faker\Factory::create();
+        $columns = self::getColumnsFromTable($table);
+        $query = "INSERT INTO " . $table . " (";
+        foreach ($columns as $index => $value) {
+            if ($index == 'name') {
+                $query .= $index . ",";
+            }
+        }
+        $query = substr($query, 0, -1);
+        $query .= ") VALUES ";
+        foreach (range(1, $quantity) as $number) {
+            $query .= "(";
+            foreach ($columns as $index => $value) {
+                if ($index == "name") {
+                    $query .= "'" . $prefix . "_" . $faker->name . "',";            
+                }
+            }
+            $query = substr($query, 0, -1);
+            $query .= "),";
+        }
+        $query = substr($query, 0, -1);
+        $DB->query($query);
+    }
+
 
     /**
      * Get the value of prefix
      * @return string
-     */ 
-    private function getPrefix() {
+     */
+    private function getPrefix()
+    {
         return $this->prefix;
     }
 
@@ -92,8 +116,9 @@ class PluginDbpopulatorDbpopulator extends CommonDBTM {
      * Set the value of prefix
      *
      * @return  self
-     */ 
-    private function setPrefix($prefix) {
+     */
+    private function setPrefix($prefix)
+    {
         // If prefix is empty, set it to fake_
         if (empty($prefix)) {
             $prefix = 'fake_';
