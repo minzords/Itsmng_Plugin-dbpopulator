@@ -51,26 +51,45 @@ if (isset($_POST['computers']) || isset($_POST['users'])) {
     $db->populate(['computers' => $computers, 'users' => $users, 'prefix' => $prefix]);
     echo '<div class="center">Database populated</div>';
 }
+
+$item=['computers','monitor','phone','printer','users']
+
 ?>
 <div class="center">
+
+
     <form method="post" action="dbpopulator.form.php">
-        <div>
-            <label for="computers">Amount of computers to create</label><br>
-            <input type="number" name="computers" value="1">
-        </div>
-        <br>
-        <div>
-            <label for="users">Amount of users to create</label><br>
-            <input type="number" name="users" value="1">
-        </div>
-        <br>
-        <div>
-            <label for="prefix">Prefix</label><br>
-            <input type="text" name="prefix" value="">
-        </div>
-        <button type="submit">Populate</button>
-        <?php
-        Html::footer();
-        Html::closeForm();
-        echo "</div>"
-        ?>
+        <table class='tab_cadre' cellpadding='5'>
+            <tr>
+                <th colspan='2'>Configuration</th>
+            </tr>
+            
+            <tr class='tab_bg_1'>
+                <td class='center b' colspan='2'>
+                    <br>
+
+                    <?php
+                        $elements = ['computers', 'users'];
+
+                        foreach ($elements as $element) {
+                            echo "<div>
+                                    <label for='$element'>Amount of $element to create</label><br>
+                                    <input type='number' name='$element' value='0'>
+                                </div>
+                                <br>";
+                        }
+                    ?>
+                    <br>
+                    <div>
+                        <label for="prefix">Prefix</label><br>
+                        <input type="text" name="prefix" value="">
+                    </div>
+                </td>
+            </tr>
+            <tr class='tab_bg_1'>
+                <td class='center' colspan='2'>
+                    <input type='submit' name='update' class='submit'>&nbsp;&nbsp;
+                </td>
+            </tr>
+        </table>
+  <?php Html::closeForm(); ?>
