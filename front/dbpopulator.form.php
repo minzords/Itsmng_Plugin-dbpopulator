@@ -41,19 +41,12 @@ if ($plugin->isActivated("dbpopulator")) {
 } else {
     Html::displayRightError();
 }
-
-if (isset($_POST['computers']) || isset($_POST['users'])) {
+if (isset($_POST['itemtype']) && isset($_POST['amount'])) {
     Session::checkRight("config", UPDATE);
-    $computers = $_POST['computers'];
-    $users = $_POST['users'];
-    $prefix = $_POST['prefix'];
     $db = new PluginDbpopulatorDbpopulator();
-    $db->populate(['computers' => $computers, 'users' => $users, 'prefix' => $prefix]);
-    echo '<div class="center">Database populated</div>';
+    $db->populate($_POST['prefix'], $_POST['itemtype'], $_POST['amount']);
+    Session::addMessageAfterRedirect(__('Database populated', 'dbpopulator'));
 }
-
-$item=['computers','monitor','phone','printer','users']
-
 ?>
 <div class="center">
 
@@ -63,27 +56,14 @@ $item=['computers','monitor','phone','printer','users']
             <tr>
                 <th colspan='2'>Configuration</th>
             </tr>
-            
+
             <tr class='tab_bg_1'>
                 <td class='center b' colspan='2'>
-                    <br>
-
-                    <?php
-                        $elements = ['computers', 'users'];
-
-                        foreach ($elements as $element) {
-                            echo "<div>
-                                    <label for='$element'>Amount of $element to create</label><br>
-                                    <input type='number' name='$element' value='0'>
-                                </div>
-                                <br>";
-                        }
-                    ?>
-                    <br>
-                    <div>
-                        <label for="prefix">Prefix</label><br>
-                        <input type="text" name="prefix" value="">
-                    </div>
+                    <?php Dropdown::showItemType('table', []) ?><br><br>
+                    <label for='amount'>Amount : </label>
+                    <input type='number' name='amount' value='0'><br><br>
+                    <label for="prefix">Prefix : </label>
+                    <input type="text" name="prefix" value="">
                 </td>
             </tr>
             <tr class='tab_bg_1'>
@@ -92,4 +72,5 @@ $item=['computers','monitor','phone','printer','users']
                 </td>
             </tr>
         </table>
-  <?php Html::closeForm(); ?>
+        <?php Html::closeForm(); ?>
+</div>

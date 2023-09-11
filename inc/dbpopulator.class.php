@@ -21,17 +21,14 @@ class PluginDbpopulatorDbpopulator extends CommonDBTM
      * @param array $array
      * @return void
      */
-    function populate(array $array): void
+    function populate(string $prefix, string $type, int $quantity): void
     {
 
-        self::setPrefix($array['prefix']);
-        unset($array['prefix']);
+        self::setPrefix($prefix);
 
-        foreach ($array as $key => $value) {
-            $table = getTableForItemType($key);
-            if ($table != null) {
-                self::populateTable($table, self::getPrefix(), intval($value));
-            }
+        $table = getTableForItemType($type);
+        if ($table != null) {
+            self::populateTable($table, self::getPrefix(), $quantity);
         }
     }
 
@@ -92,7 +89,7 @@ class PluginDbpopulatorDbpopulator extends CommonDBTM
             $query .= "(";
             foreach ($columns as $index => $value) {
                 if ($index == "name") {
-                    $query .= '"' . $prefix . "_" . $faker->name . '",';            
+                    $query .= '"' . $prefix . "_" . $faker->word(). '",';            
                 }
             }
             $query = substr($query, 0, -1);
