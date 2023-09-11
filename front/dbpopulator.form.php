@@ -75,3 +75,4 @@ if (isset($_POST['itemtype']) && isset($_POST['amount'])) {
         </table>
         <?php Html::closeForm(); ?>
 </div>
+<?php Html::footer() ?>
