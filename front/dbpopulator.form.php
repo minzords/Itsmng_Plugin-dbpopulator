@@ -46,6 +46,7 @@ if (isset($_POST['itemtype']) && isset($_POST['amount'])) {
     $db = new PluginDbpopulatorDbpopulator();
     $db->populate($_POST['prefix'], $_POST['itemtype'], $_POST['amount']);
     Session::addMessageAfterRedirect(__('Database populated', 'dbpopulator'));
+    Html::back();
 }
 ?>
 <div class="center">
