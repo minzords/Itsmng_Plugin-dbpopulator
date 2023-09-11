@@ -92,13 +92,14 @@ class PluginDbpopulatorDbpopulator extends CommonDBTM
             $query .= "(";
             foreach ($columns as $index => $value) {
                 if ($index == "name") {
-                    $query .= "'" . $prefix . "_" . $faker->name . "',";            
+                    $query .= '"' . $prefix . "_" . $faker->name . '",';            
                 }
             }
             $query = substr($query, 0, -1);
             $query .= "),";
         }
         $query = substr($query, 0, -1);
+        echo '<h5>'.$query.'</h5>';
         $DB->query($query);
     }
 
