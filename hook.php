@@ -56,5 +56,21 @@ function plugin_dbpopulator_install(): bool {
  * @return boolean
  */
 function plugin_dbpopulator_uninstall(): bool {
+    global $DB;
+
+    if($DB->tableExists('glpi_plugin_dbpopulator_profiles')) {
+        $DB->queryOrDie("DROP TABLE `glpi_plugin_dbpopulator_profiles`",$DB->error());
+    }
+
+    // Clear profiles
+    foreach (PluginDbpopulatorProfile::getRightsGeneral() as $right) {
+        $query = "DELETE FROM `glpi_profilerights` WHERE `name` = '".$right['field']."'";
+        $DB->query($query);
+
+        if (isset($_SESSION['glpiactiveprofile'][$right['field']])) {
+           unset($_SESSION['glpiactiveprofile'][$right['field']]);
+        }
+   }
+
     return true;
 }
