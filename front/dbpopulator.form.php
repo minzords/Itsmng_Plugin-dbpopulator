@@ -45,7 +45,7 @@ if ($plugin->isActivated("dbpopulator")) {
 if (isset($_POST['table']) && $_POST['table'] != 0 && isset($_POST['amount'])) {
     Session::checkRight("config", UPDATE);
     $db = new PluginDbpopulatorDbpopulator();
-    $db->populate($_POST['prefix'], $_POST['table'], $_POST['amount']);
+    $db->populate($_POST['format'], $_POST['table'], $_POST['amount']);
     Session::addMessageAfterRedirect(__('Database populated', 'dbpopulator'));
     
     Html::back();
@@ -76,8 +76,9 @@ foreach ($tables as $table) {
                     <?php Dropdown::showFromArray('table', $values, ['display_emptychoice' => true]) ?><br><br>
                     <label for='amount'>Amount : </label>
                     <input type='number' name='amount' value='0'><br><br>
-                    <label for="prefix">Prefix : </label>
-                    <input type="text" name="prefix" value="">
+                    <label for="format">Format : </label>
+                    <input type="text" name="format" value=""><br>
+                    <label for="format" class="grey-border">(random part: "%%")</label>
                 </td>
             </tr>
             <tr class='tab_bg_1'>

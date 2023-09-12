@@ -2,10 +2,6 @@
 
 class PluginDbpopulatorDbpopulator extends CommonDBTM
 {
-
-    private $prefix;
-
-
     /**
      * Constructor
      */
@@ -21,10 +17,30 @@ class PluginDbpopulatorDbpopulator extends CommonDBTM
      * @param array $array
      * @return void
      */
-    function populate(string $prefix, string $type, int $quantity): void
+    function populate(string $format, string $table, int $quantity): void
     {
-        self::setPrefix($prefix);
-        self::populateTable($type, self::getPrefix(), $quantity);
+        global $DB;
+        $columns = self::getColumnsFromTable($table);
+        $query = "INSERT INTO " . $table . " (";
+        foreach ($columns as $index => $value) {
+            if ($index == 'name') {
+                $query .= $index . ",";
+            }
+        }
+        $query = substr($query, 0, -1);
+        $query .= ") VALUES ";
+        foreach (range(1, $quantity) as $number) {
+            $query .= "(";
+            foreach ($columns as $index => $value) {
+                if ($index == "name") {
+                    $query .= '"' .self::generateFormatedValue($format). '",';            
+                }
+            }
+            $query = substr($query, 0, -1);
+            $query .= "),";
+        }
+        $query = substr($query, 0, -1);
+        $DB->query($query);
     }
 
     /**
@@ -59,65 +75,19 @@ class PluginDbpopulatorDbpopulator extends CommonDBTM
         return $ret;
     }
 
-
     /**
-     * Populate a table with fake data using faker
+     * generate the formatted value
      * 
-     * @param string $table
-     * @param string $prefix
-     * @param int $quantity
-     * @global object $DB
-     */
-    private function populateTable(string $table, string $prefix, int $quantity) {
-        global $DB;
-        $faker = Faker\Factory::create();
-        $columns = self::getColumnsFromTable($table);
-        $query = "INSERT INTO " . $table . " (";
-        foreach ($columns as $index => $value) {
-            if ($index == 'name') {
-                $query .= $index . ",";
-            }
-        }
-        $query = substr($query, 0, -1);
-        $query .= ") VALUES ";
-        foreach (range(1, $quantity) as $number) {
-            $query .= "(";
-            foreach ($columns as $index => $value) {
-                if ($index == "name") {
-                    $query .= '"' . $prefix . "_" . $faker->randomNumber(6). '",';            
-                }
-            }
-            $query = substr($query, 0, -1);
-            $query .= "),";
-        }
-        $query = substr($query, 0, -1);
-        $DB->query($query);
-    }
-
-
-    /**
-     * Get the value of prefix
+     * @param string $format
      * @return string
      */
-    private function getPrefix()
-    {
-        return $this->prefix;
-    }
-
-    /**
-     * Set the value of prefix
-     *
-     * @return  self
-     */
-    private function setPrefix($prefix)
-    {
-        // If prefix is empty, set it to fake_
-        if (empty($prefix)) {
-            $prefix = 'fake_';
+    private function generateFormatedValue(string $format): string {
+        $faker = Faker\Factory::create();
+        $random_value = $faker->randomNumber(6);
+        if (count(explode("%%", $format)) == 1) {
+            return $format.$random_value;
+        } else {
+            return str_replace("%%", $random_value, $format);
         }
-
-        $this->prefix = $prefix;
-
-        return $this->prefix;
     }
 }
