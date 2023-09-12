@@ -47,21 +47,9 @@ if (isset($_POST['table']) && $_POST['table'] != 0 && isset($_POST['amount'])) {
     $db = new PluginDbpopulatorDbpopulator();
     $db->populate($_POST['format'], $_POST['table'], $_POST['amount']);
     Session::addMessageAfterRedirect(__('Database populated', 'dbpopulator'));
-    
     Html::back();
 }
 
-global $DB;
-$query = "SELECT GROUP_CONCAT(DISTINCT TABLE_NAME SEPARATOR ',') 
-FROM INFORMATION_SCHEMA.COLUMNS 
-WHERE COLUMN_NAME IN ('name') AND TABLE_SCHEMA = '".$DB->dbdefault."';
-";
-$result = $DB->query($query);
-$tables = explode(',', $result->fetch_row()[0]);
-$values = [];
-foreach ($tables as $table) {
-    $values[$table] = $table;
-}
 ?>
 
 <div class="center">
@@ -73,7 +61,7 @@ foreach ($tables as $table) {
 
             <tr class='tab_bg_1'>
                 <td class='center b' colspan='2'>
-                    <?php Dropdown::showFromArray('table', $values, ['display_emptychoice' => true]) ?><br><br>
+                    <?php Dropdown::showFromArray('table', PluginDbpopulatorDbpopulator::getTables(), ['display_emptychoice' => true]) ?><br><br>
                     <label for='amount'>Amount : </label>
                     <input type='number' name='amount' value='0'><br><br>
                     <label for="format">Format : </label>

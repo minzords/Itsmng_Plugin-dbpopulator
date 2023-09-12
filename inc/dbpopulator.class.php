@@ -90,4 +90,16 @@ class PluginDbpopulatorDbpopulator extends CommonDBTM
             return str_replace("%%", $random_value, $format);
         }
     }
+
+    static function getTables(): array
+    {
+        global $DB;
+        $query = "SELECT TABLE_NAME FROM INFORMATION_SCHEMA.TABLES WHERE TABLE_TYPE = 'BASE TABLE' AND TABLE_SCHEMA='" . $DB->dbdefault . "'";
+        $result = $DB->query($query);
+        $ret = [];
+        while ($row = $result->fetch_assoc()) {
+            $ret[$row['TABLE_NAME']] = $row['TABLE_NAME'];
+        }
+        return $ret;
+    }
 }
