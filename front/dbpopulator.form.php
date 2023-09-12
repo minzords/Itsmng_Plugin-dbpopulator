@@ -31,9 +31,6 @@
  * ---------------------------------------------------------------------
  */
 
-use function PHPSTORM_META\type;
-use function Sabre\Xml\Deserializer\keyValue;
-
 include_once('../../../inc/includes.php');
 
 Html::header(__("Populate database", "dbpopulator"), $_SERVER['PHP_SELF'], 'tools', PluginDbpopulatorConfig::class);
