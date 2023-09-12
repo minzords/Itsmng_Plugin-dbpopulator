@@ -23,13 +23,9 @@ class PluginDbpopulatorDbpopulator extends CommonDBTM
      */
     function populate(string $prefix, string $type, int $quantity): void
     {
-
+        echo "Populating " . $type . " with " . $quantity . " entries\n";
         self::setPrefix($prefix);
-
-        $table = getTableForItemType($type);
-        if ($table != null) {
-            self::populateTable($table, self::getPrefix(), $quantity);
-        }
+        self::populateTable($type, self::getPrefix(), $quantity);
     }
 
     /**
@@ -89,7 +85,7 @@ class PluginDbpopulatorDbpopulator extends CommonDBTM
             $query .= "(";
             foreach ($columns as $index => $value) {
                 if ($index == "name") {
-                    $query .= '"' . $prefix . "_" . $faker->word(). '",';            
+                    $query .= '"' . $prefix . "_" . $faker->randomNumber(6, true). '",';            
                 }
             }
             $query = substr($query, 0, -1);

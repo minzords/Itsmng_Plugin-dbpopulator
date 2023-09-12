@@ -31,6 +31,9 @@
  * ---------------------------------------------------------------------
  */
 
+use function PHPSTORM_META\type;
+use function Sabre\Xml\Deserializer\keyValue;
+
 include_once('../../../inc/includes.php');
 
 Html::header(__("Populate database", "dbpopulator"), $_SERVER['PHP_SELF'], 'tools', PluginDbpopulatorConfig::class);
@@ -41,17 +44,31 @@ if ($plugin->isActivated("dbpopulator")) {
 } else {
     Html::displayRightError();
 }
-if (isset($_POST['itemtype']) && isset($_POST['amount'])) {
+
+print_r($_POST);
+if (isset($_POST['table']) && $_POST['table'] != 0 && isset($_POST['amount'])) {
     Session::checkRight("config", UPDATE);
     $db = new PluginDbpopulatorDbpopulator();
-    $db->populate($_POST['prefix'], $_POST['itemtype'], $_POST['amount']);
+    $db->populate($_POST['prefix'], $_POST['table'], $_POST['amount']);
     Session::addMessageAfterRedirect(__('Database populated', 'dbpopulator'));
+    
     Html::back();
 }
+
+global $DB;
+$query = "SELECT GROUP_CONCAT(DISTINCT TABLE_NAME SEPARATOR ',') 
+FROM INFORMATION_SCHEMA.COLUMNS 
+WHERE COLUMN_NAME IN ('name') AND TABLE_SCHEMA = '".$DB->dbdefault."';
+";
+$result = $DB->query($query);
+$tables = explode(',', $result->fetch_row()[0]);
+$values = [];
+foreach ($tables as $table) {
+    $values[$table] = $table;
+}
 ?>
+
 <div class="center">
-
-
     <form method="post" action="dbpopulator.form.php">
         <table class='tab_cadre' cellpadding='5'>
             <tr>
@@ -60,7 +77,7 @@ if (isset($_POST['itemtype']) && isset($_POST['amount'])) {
 
             <tr class='tab_bg_1'>
                 <td class='center b' colspan='2'>
-                    <?php Dropdown::showItemType('table', []) ?><br><br>
+                    <?php Dropdown::showFromArray('table', $values, ['display_emptychoice' => true]) ?><br><br>
                     <label for='amount'>Amount : </label>
                     <input type='number' name='amount' value='0'><br><br>
                     <label for="prefix">Prefix : </label>
