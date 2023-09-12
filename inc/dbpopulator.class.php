@@ -23,7 +23,6 @@ class PluginDbpopulatorDbpopulator extends CommonDBTM
      */
     function populate(string $prefix, string $type, int $quantity): void
     {
-        echo "Populating " . $type . " with " . $quantity . " entries\n";
         self::setPrefix($prefix);
         self::populateTable($type, self::getPrefix(), $quantity);
     }
