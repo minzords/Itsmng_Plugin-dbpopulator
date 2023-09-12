@@ -3,9 +3,12 @@
 /**
  * ---------------------------------------------------------------------
  * ITSM-NG
- * Copyright (C) 2023 ITSM-NG and contributors.
+ * Copyright (C) 2022 ITSM-NG and contributors.
  *
  * https://www.itsm-ng.org
+ *
+ * based on GLPI - Gestionnaire Libre de Parc Informatique
+ * Copyright (C) 2003-2014 by the INDEPNET Development Team.
  *
  * ---------------------------------------------------------------------
  *
@@ -26,9 +29,15 @@
  * You should have received a copy of the GNU General Public License
  * along with ITSM-NG. If not, see <http://www.gnu.org/licenses/>.
  * ---------------------------------------------------------------------
- **/
- 
-function plugin_dbpopulator_install(): bool {
+ */
+
+/**
+ * Install plugin
+ *
+ * @return boolean
+ */
+function plugin_dbpopulator_install(): bool
+{
     global $DB;
     if (!$DB->tableExists("glpi_plugin_dbpopulator_profiles")) {
         $query = "CREATE TABLE `glpi_plugin_dbpopulator_profiles` (
@@ -39,15 +48,15 @@ function plugin_dbpopulator_install(): bool {
 
         $DB->queryOrDie($query, $DB->error());
 
-        include_once(GLPI_ROOT."/plugins/dbpopulator/inc/profile.class.php");
+        include_once(GLPI_ROOT . "/plugins/dbpopulator/inc/profile.class.php");
         PluginDbpopulatorProfile::createAdminAccess($_SESSION['glpiactiveprofile']['id']);
 
         foreach (PluginDbpopulatorProfile::getRightsGeneral() as $right) {
-            PluginDbpopulatorProfile::addDefaultProfileInfos($_SESSION['glpiactiveprofile']['id'],[$right['field'] => $right['default']]);
+            PluginDbpopulatorProfile::addDefaultProfileInfos($_SESSION['glpiactiveprofile']['id'], [$right['field'] => $right['default']]);
         }
     }
 
-    return true ;
+    return true;
 }
 
 /**
@@ -55,22 +64,23 @@ function plugin_dbpopulator_install(): bool {
  *
  * @return boolean
  */
-function plugin_dbpopulator_uninstall(): bool {
+function plugin_dbpopulator_uninstall(): bool
+{
     global $DB;
 
-    if($DB->tableExists('glpi_plugin_dbpopulator_profiles')) {
-        $DB->queryOrDie("DROP TABLE `glpi_plugin_dbpopulator_profiles`",$DB->error());
+    if ($DB->tableExists('glpi_plugin_dbpopulator_profiles')) {
+        $DB->queryOrDie("DROP TABLE `glpi_plugin_dbpopulator_profiles`", $DB->error());
     }
 
     // Clear profiles
     foreach (PluginDbpopulatorProfile::getRightsGeneral() as $right) {
-        $query = "DELETE FROM `glpi_profilerights` WHERE `name` = '".$right['field']."'";
+        $query = "DELETE FROM `glpi_profilerights` WHERE `name` = '" . $right['field'] . "'";
         $DB->query($query);
 
         if (isset($_SESSION['glpiactiveprofile'][$right['field']])) {
-           unset($_SESSION['glpiactiveprofile'][$right['field']]);
+            unset($_SESSION['glpiactiveprofile'][$right['field']]);
         }
-   }
+    }
 
     return true;
 }
