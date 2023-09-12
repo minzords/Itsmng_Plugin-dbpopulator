@@ -42,7 +42,6 @@ if ($plugin->isActivated("dbpopulator")) {
     Html::displayRightError();
 }
 
-print_r($_POST);
 if (isset($_POST['table']) && $_POST['table'] != 0 && isset($_POST['amount'])) {
     Session::checkRight("config", UPDATE);
     $db = new PluginDbpopulatorDbpopulator();
