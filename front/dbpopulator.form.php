@@ -32,6 +32,13 @@ include_once('../../../inc/includes.php');
 
 Html::header(__("Populate database", "dbpopulator"), $_SERVER['PHP_SELF'], 'tools', PluginDbpopulatorConfig::class);
 
+ini_set('display_errors', 1);
+require_once GLPI_ROOT . "/ng/twig.class.php";
+$template_dir[] = GLPI_ROOT . "/templates";
+$template_dir[] = Plugin::getPhpDir("dbpopulator") . "/templates";
+$twig = Twig::load($template_dir, false);
+
+// show page only to authorized users
 $plugin = new Plugin();
 if ($plugin->isActivated("dbpopulator")) {
     Session::checkRight("config", READ);
@@ -39,6 +46,7 @@ if ($plugin->isActivated("dbpopulator")) {
     Html::displayRightError();
 }
 
+// populate database if a post request is received
 if (isset($_POST['table']) && $_POST['table'] != 0 && isset($_POST['amount'])) {
     Session::checkRight("config", UPDATE);
     $db = new PluginDbpopulatorDbpopulator();
@@ -46,32 +54,9 @@ if (isset($_POST['table']) && $_POST['table'] != 0 && isset($_POST['amount'])) {
     Session::addMessageAfterRedirect(__('Database populated', 'dbpopulator'));
     Html::back();
 }
-
+echo $twig->render('dbpopulator.form.twig', [
+    'tables' => PluginDbpopulatorDbpopulator::getTables(),
+    'crsf' => Session::getNewCSRFToken(),
+]);
+Html::footer();
 ?>
-
-<div class="center">
-    <form method="post" action="dbpopulator.form.php">
-        <table class='tab_cadre' cellpadding='5'>
-            <tr>
-                <th colspan='2'>Configuration</th>
-            </tr>
-
-            <tr class='tab_bg_1'>
-                <td class='center b' colspan='2'>
-                    <?php Dropdown::showFromArray('table', PluginDbpopulatorDbpopulator::getTables(), ['display_emptychoice' => true]) ?><br><br>
-                    <label for='amount'>Amount : </label>
-                    <input type='number' name='amount' value='0'><br><br>
-                    <label for="format">Format : </label>
-                    <input type="text" name="format" value=""><br>
-                    <label for="format" class="grey-border">(random part: "%%")</label>
-                </td>
-            </tr>
-            <tr class='tab_bg_1'>
-                <td class='center' colspan='2'>
-                    <input type='submit' name='update' class='submit'>&nbsp;&nbsp;
-                </td>
-            </tr>
-        </table>
-        <?php Html::closeForm(); ?>
-</div>
-<?php Html::footer() ?>

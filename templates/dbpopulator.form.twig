@@ -1,0 +1,22 @@
+{% from 'macros.twig' import button, table, dropdown, input %}
+
+<div class="center">
+    <form method="post" action="dbpopulator.form.php">
+    {{ table(
+    { table_name: "dbpopulator", checkbox_value: "id" },
+    {
+        args: [
+            ["Table:", dropdown('table', tables, true)],
+            ["Amount:", input('number', 'amount', 0)],
+            ["Format:", input('text', 'format', '')],
+        ],
+        titles: [
+            'parameter',
+            'value',
+        ]
+    }
+    ) }}
+    {{ button('submit', 'Submit') }}
+    <input type="hidden" name="_glpi_csrf_token" value="{{csrf}}"/>
+    </form>
+</div>
