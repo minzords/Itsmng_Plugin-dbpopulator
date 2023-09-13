@@ -1,11 +1,35 @@
 <?php
 
+/**
+ * ---------------------------------------------------------------------
+ * ITSM-NG
+ * Copyright (C) 2022 ITSM-NG and contributors.
+ *
+ * https://www.itsm-ng.org
+ *
+ * ---------------------------------------------------------------------
+ *
+ * LICENSE
+ *
+ * This file is part of ITSM-NG.
+ *
+ * ITSM-NG is free software; you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation; either version 2 of the License, or
+ * (at your option) any later version.
+ *
+ * ITSM-NG is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with ITSM-NG. If not, see <http://www.gnu.org/licenses/>.
+ * ---------------------------------------------------------------------
+ */
+
 class PluginDbpopulatorDbpopulator extends CommonDBTM
 {
-
-    private $prefix;
-
-
     /**
      * Constructor
      */
@@ -21,111 +45,43 @@ class PluginDbpopulatorDbpopulator extends CommonDBTM
      * @param array $array
      * @return void
      */
-    function populate(array $array): void
-    {
-
-        self::setPrefix($array['prefix']);
-        unset($array['prefix']);
-
-        foreach ($array as $key => $value) {
-            $table = getTableForItemType($key);
-            if ($table != null) {
-                self::populateTable($table, self::getPrefix(), intval($value));
-            }
-        }
-    }
-
-    /**
-     * get the columns of a table
-     * 
-     * @param string $table
-     * @global object $DB
-     * 
-     * @return array
-     */
-    private function getColumnsFromTable(string $table)
+    function populate(string $format, string $table, int $quantity): void
     {
         global $DB;
-        $queryValue = "select GROUP_CONCAT(column_name) nonnull_columns 
-        from information_schema.columns 
-        where table_schema = '".$DB->dbdefault."' and
-        table_name = '" . $table . "' and
-        is_nullable = 'YES'";
-        $values = explode(',', $DB->query($queryValue)->fetch_assoc()['nonnull_columns']);
-        $queryValue = "select GROUP_CONCAT(column_type) nonnull_columns 
-        from information_schema.columns 
-        where table_schema = '".$DB->dbdefault."' and
-        table_name = '" . $table . "' and
-        is_nullable = 'YES'";
-        $types = explode(',', $DB->query($queryValue)->fetch_assoc()['nonnull_columns']);
-
-        $ret = [];
-        foreach ($values as $index => $col) {
-            $ret[$col] = $types[$index];
-        }
-
-        return $ret;
-    }
-
-
-    /**
-     * Populate a table with fake data using faker
-     * 
-     * @param string $table
-     * @param string $prefix
-     * @param int $quantity
-     * @global object $DB
-     */
-    private function populateTable(string $table, string $prefix, int $quantity) {
-        global $DB;
-        $faker = Faker\Factory::create();
-        $columns = self::getColumnsFromTable($table);
-        $query = "INSERT INTO " . $table . " (";
-        foreach ($columns as $index => $value) {
-            if ($index == 'name') {
-                $query .= $index . ",";
-            }
-        }
-        $query = substr($query, 0, -1);
-        $query .= ") VALUES ";
+        $query = "INSERT INTO " . $table . " (name) VALUES ";
         foreach (range(1, $quantity) as $number) {
-            $query .= "(";
-            foreach ($columns as $index => $value) {
-                if ($index == "name") {
-                    $query .= '"' . $prefix . "_" . $faker->name . '",';            
-                }
-            }
-            $query = substr($query, 0, -1);
-            $query .= "),";
+            $query .= "('" . self::generateFormatedValue($format) . "'),";
         }
         $query = substr($query, 0, -1);
         $DB->query($query);
     }
 
-
     /**
-     * Get the value of prefix
+     * generate the formatted value
+     * 
+     * @param string $format
      * @return string
      */
-    private function getPrefix()
+    private function generateFormatedValue(string $format): string
     {
-        return $this->prefix;
+        $faker = Faker\Factory::create();
+        $random_value = $faker->randomNumber(6);
+        if (count(explode("%%", $format)) == 1) {
+            return $format . $random_value;
+        } else {
+            return str_replace("%%", $random_value, $format);
+        }
     }
 
-    /**
-     * Set the value of prefix
-     *
-     * @return  self
-     */
-    private function setPrefix($prefix)
+    static function getTables(): array
     {
-        // If prefix is empty, set it to fake_
-        if (empty($prefix)) {
-            $prefix = 'fake_';
+        global $DB;
+        $query = "SELECT TABLE_NAME FROM INFORMATION_SCHEMA.TABLES WHERE TABLE_TYPE = 'BASE TABLE' AND TABLE_SCHEMA='" . $DB->dbdefault . "'";
+        $result = $DB->query($query);
+        $ret = [];
+        while ($row = $result->fetch_assoc()) {
+            $ret[$row['TABLE_NAME']] = $row['TABLE_NAME'];
         }
-
-        $this->prefix = $prefix;
-
-        return $this->prefix;
+        return $ret;
     }
 }

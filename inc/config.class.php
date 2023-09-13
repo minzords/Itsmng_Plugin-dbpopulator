@@ -1,13 +1,11 @@
 <?php
+
 /**
  * ---------------------------------------------------------------------
  * ITSM-NG
  * Copyright (C) 2022 ITSM-NG and contributors.
  *
  * https://www.itsm-ng.org
- *
- * based on GLPI - Gestionnaire Libre de Parc Informatique
- * Copyright (C) 2003-2014 by the INDEPNET Development Team.
  *
  * ---------------------------------------------------------------------
  *
@@ -30,20 +28,22 @@
  * ---------------------------------------------------------------------
  */
 
-class PluginDbpopulatorConfig extends CommonDBTM {
+class PluginDbpopulatorConfig extends CommonDBTM
+{
 
     static $rightname = 'config';
-    
+
     /**
      * getTypeName
      *
      * @param  int $nb
      * @return string
      */
-    static function getTypeName($nb = 0) {
+    static function getTypeName($nb = 0)
+    {
         return __("Translation editor", 'edittraduction');
     }
-    
+
     /**
      * get menu content
      *
